@@ -73,9 +73,6 @@ class ProfileExtractWindow:
         self.export_button.place(x=2*self.typical_border + self.open_file_button.winfo_width(), y = self.typical_border)
         self.export_button.config(state="disabled")
         
-        self.image_canvas = tk.Canvas(self.master, width=self.im_canv_width, height=self.im_canv_height, bd=2, bg="grey", highlightcolor="red")
-        self.image_canvas.place(x = self.workspace_width + self.typical_border, y = self.typical_border)
-        
         self.x1_button = tk.Button(self.master, command=self.on_x1_press, text="Place x1")
         self.x1_button.place(x = self.typical_border, y = self.open_file_button.winfo_height() + 2 * self.typical_border)
         
@@ -118,12 +115,29 @@ class ProfileExtractWindow:
         self.y2_label = tk.Label(self.master, text="y2=")
         self.y2_label.place(x = 2*self.typical_border + self.x1_button.winfo_width(), y = 4*self.open_file_button.winfo_height() + 5 * self.typical_border + self.label_disp)
         
-        self.num_points_entry = tk.Entry(self.master)
-        self.num_points_entry.insert(0, str(self.interp_points))
-        self.num_points_entry.place(x = 2*self.typical_border + 3*self.lb_width, y = 5*self.open_file_button.winfo_height() + 6 * self.typical_border, width=int(0.8*self.datum_entry_width))
-        
         self.num_points_label = tk.Label(self.master, text="Number of points:")
         self.num_points_label.place(x = self.typical_border, y = 5*self.open_file_button.winfo_height() + 6 * self.typical_border)
+        
+        self.master.update()
+        
+        self.num_points_entry = tk.Entry(self.master)
+        self.num_points_entry.insert(0, str(self.interp_points))
+        self.num_points_entry.place(x = 2*self.typical_border + self.num_points_label.winfo_width(), y = 5*self.open_file_button.winfo_height() + 6 * self.typical_border, width=int(0.8*self.datum_entry_width))
+        
+        self.master.update()
+        
+        widths = [self.rightmost(self.num_points_entry)]
+        widths.append(self.rightmost(self.x1_entry))
+        widths.append(self.rightmost(self.x2_entry))
+        widths.append(self.rightmost(self.y1_entry))
+        widths.append(self.rightmost(self.y2_entry))
+        
+        self.workspace_width = max(widths)
+        
+        print(widths)
+        
+        self.image_canvas = tk.Canvas(self.master, width=self.im_canv_width, height=self.im_canv_height, bd=2, bg="grey", highlightcolor="red")
+        self.image_canvas.place(x = self.workspace_width + self.typical_border, y = self.typical_border)
         
         self.image_canvas.bind("<Motion>", self.on_mouse_move)
         self.image_canvas.bind("<B3-Motion>", self.on_mouse3_drag_img)
@@ -141,6 +155,9 @@ class ProfileExtractWindow:
         self.num_points_entry.bind("<FocusOut>", self.enforce_valid_entries)
         
         self.master.title("Profile Extractor")
+    
+    def rightmost(self, widget):
+        return widget.winfo_x() + widget.winfo_width()
     
     def on_mouse_move(self, event):
         if self.any_select():
