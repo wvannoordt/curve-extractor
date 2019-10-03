@@ -218,10 +218,10 @@ class Bindings:
         self.data.setting_x2 = False
         self.data.setting_y1 = False
         self.data.setting_y2 = False
-        self.window.x1_button.config(relief=tk.RAISED)
-        self.window.x2_button.config(relief=tk.RAISED)
-        self.window.y1_button.config(relief=tk.RAISED)
-        self.window.y2_button.config(relief=tk.RAISED)
+        self.window.x1_button.config(relief="flat")
+        self.window.x2_button.config(relief="flat")
+        self.window.y1_button.config(relief="flat")
+        self.window.y2_button.config(relief="flat")
         
     def make_draw_spline(self):
         n = len(self.data.profile_points)
