@@ -1,0 +1,37 @@
+class Params:
+    def __init__(self):
+        self.typical_border = 10
+        self.ini_m_x = -1
+        self.ini_m_y = -1
+        self.ini_m_x_sel = -1
+        self.ini_m_y_sel = -1
+        self.scroll_ratio = 1.1
+        self.cur_ratio = 1.0
+        self.spline_width = 3
+        self.current_delta_x = 0
+        self.current_delta_y = 0
+        self.has_image = False
+        self.bottom_label_distance = 20
+        self.datum_marker_length = 10
+        self.datum_markers_image_coords = ((-1, -1), (-1, -1), (-1, -1), (-1, -1))
+        self.profile_points = []
+        self.markerwidth = 3
+        self.controldown = False
+        self.select_tolerance = 1.05 * self.datum_marker_length
+        self.selected_index = -1
+        self.x1_pixel = -1
+        self.x2_pixel = -1
+        self.y1_pixel = -1
+        self.y2_pixel = -1
+        self.x1_real = 0
+        self.x2_real = 1
+        self.y1_real = 0
+        self.y2_real = 1
+        self.setting_x1 = False
+        self.setting_x2 = False
+        self.setting_y1 = False
+        self.setting_y2 = False
+        self.interp_points = 100
+        self.has_exportable_spline = False
+        self.x_data_points_px = ()
+        self.y_data_points_px = ()
