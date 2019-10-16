@@ -39,17 +39,3 @@ if run_comparison
        ylabel('Relative error')
     end
 end
-
-
-
-function [xout] = f_1(t)
-    xout = 3*sin(2*t) + 0.1*t.^2 + 4 * t - exp(0.3*t);
-end
-
-function [xout] = f_2(t)
-    xout = 3*cos(2*t) - 0.2*t.^3 + log(1 + t.^2);
-end
-
-function [xout] = f_3(t)
-    xout = (1./(1+t.^2)) + atan(3*t);
-end
