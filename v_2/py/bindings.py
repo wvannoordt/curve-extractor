@@ -141,7 +141,38 @@ class Bindings:
             self.on_delete()
         if str(event.char) == "i":
             self.run_insert()
-            
+        if str(event.char) == "z":
+            if self.data.has_image:
+                self.data.cur_ratio = self.data.cur_ratio * self.data.scroll_ratio
+                self.refresh_scale()
+        if str(event.char) == "x":
+            if self.data.has_image:
+                self.data.cur_ratio = self.data.cur_ratio / self.data.scroll_ratio
+                self.refresh_scale()
+        if str(event.char) == "t":
+            if self.data.has_image:
+                dochange = self.data.interp_order > 2
+                delta = 0
+                if dochange:
+                    delta = -2
+                else:
+                    delta = 2
+                self.data.interp_order = self.data.interp_order + delta
+                self.refresh_all()
+                
+    def refresh_scale(self):
+        self.window.image_canvas.delete("all")
+        new_height = int(self.data.cur_ratio * self.raw_image.height)
+        new_width = int(self.data.cur_ratio * self.raw_image.width)
+        image = self.raw_image.resize((new_width, new_height), pil_image.ANTIALIAS)
+        photo = pil_imagetk.PhotoImage(image)
+        photo.master = self.window.root
+        self.image_on_canvas = photo
+        self.curimg = self.window.image_canvas.create_image(0, 0, image=photo, anchor="nw")
+        self.window.image_canvas.itemconfig(self.image_on_canvas, image = photo)
+        self.window.image_canvas.move(self.curimg, self.data.current_delta_x, self.data.current_delta_y)
+        self.refresh_all()
+        
     def run_insert(self):
         if self.data.selected_index >= 0:
             n = len(self.data.profile_points)
@@ -238,7 +269,7 @@ class Bindings:
                 x.append(cpt[0])
                 y.append(cpt[1])
             points = [x, y]
-            tck, u = interpolate.splprep(points, s=0)
+            tck, u = interpolate.splprep(points, s=0, k=self.data.interp_order)
             n = self.data.interp_points
             unew = np.arange(0, 1 + 1/n, 1/n)
             out = interpolate.splev(unew, tck)
@@ -349,6 +380,7 @@ class Bindings:
             self.window.image_canvas.delete("all")
             new_height = int(self.data.cur_ratio * self.raw_image.height)
             new_width = int(self.data.cur_ratio * self.raw_image.width)
+            print("{},{}".format(new_height, new_width))
             image = self.raw_image.resize((new_width, new_height), pil_image.ANTIALIAS)
             photo = pil_imagetk.PhotoImage(image)
             photo.master = self.window.root

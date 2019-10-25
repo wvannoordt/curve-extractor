@@ -35,3 +35,4 @@ class Params:
         self.has_exportable_spline = False
         self.x_data_points_px = ()
         self.y_data_points_px = ()
+        self.interp_order = 3
