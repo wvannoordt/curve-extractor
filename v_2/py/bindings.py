@@ -135,30 +135,31 @@ class Bindings:
             self.data.setting_y2 = True
     
     def key_press(self, event):
-        if event.keysym == "Control_L":
-             self.data.controldown = True
-        if event.keysym == "Delete":
-            self.on_delete()
-        if str(event.char) == "i":
-            self.run_insert()
-        if str(event.char) == "z":
-            if self.data.has_image:
-                self.data.cur_ratio = self.data.cur_ratio * self.data.scroll_ratio
-                self.refresh_scale()
-        if str(event.char) == "x":
-            if self.data.has_image:
-                self.data.cur_ratio = self.data.cur_ratio / self.data.scroll_ratio
-                self.refresh_scale()
-        if str(event.char) == "t":
-            if self.data.has_image:
-                dochange = self.data.interp_order > 2
-                delta = 0
-                if dochange:
-                    delta = -2
-                else:
-                    delta = 2
-                self.data.interp_order = self.data.interp_order + delta
-                self.refresh_all()
+        if not self.data.no_keys:
+            if event.keysym == "Control_L":
+                 self.data.controldown = True
+            if event.keysym == "Delete":
+                self.on_delete()
+            if str(event.char) == "i":
+                self.run_insert()
+            if str(event.char) == "z":
+                if self.data.has_image:
+                    self.data.cur_ratio = self.data.cur_ratio * self.data.scroll_ratio
+                    self.refresh_scale()
+            if str(event.char) == "x":
+                if self.data.has_image:
+                    self.data.cur_ratio = self.data.cur_ratio / self.data.scroll_ratio
+                    self.refresh_scale()
+            if str(event.char) == "t":
+                if self.data.has_image:
+                    dochange = self.data.interp_order > 2
+                    delta = 0
+                    if dochange:
+                        delta = -2
+                    else:
+                        delta = 2
+                    self.data.interp_order = self.data.interp_order + delta
+                    self.refresh_all()
                 
     def refresh_scale(self):
         self.window.image_canvas.delete("all")
@@ -217,10 +218,12 @@ class Bindings:
              self.data.controldown = False
     
     def export_data(self):
+        self.data.no_keys = True
         unit_per_pixel_x = (self.data.x2_real - self.data.x1_real) / (self.data.x2_pixel - self.data.x1_pixel)
         unit_per_pixel_y = (self.data.y2_real - self.data.y1_real) / (self.data.y2_pixel - self.data.y1_pixel)
         output_file = tk_filedialog.asksaveasfile(mode='w', defaultextension=".csv", filetypes = (("CSV","*.csv"),("Other","*")))
         n = len(self.data.x_data_points_px)
+        self.data.no_keys = False
         for i in range(n):
             curx = self.data.x1_real + (self.data.x_data_points_px[i] - self.data.x1_pixel) * unit_per_pixel_x
             cury = self.data.y1_real + (self.data.y_data_points_px[i] - self.data.y1_pixel) * unit_per_pixel_y
@@ -269,12 +272,18 @@ class Bindings:
                 x.append(cpt[0])
                 y.append(cpt[1])
             points = [x, y]
-            tck, u = interpolate.splprep(points, s=0, k=self.data.interp_order)
-            n = self.data.interp_points
-            unew = np.arange(0, 1 + 1/n, 1/n)
-            out = interpolate.splev(unew, tck)
-            out_x = out[0]
-            out_y = out[1]
+            out_x = []
+            out_y = []
+            if self.data.interp_order > 1:
+                tck, u = interpolate.splprep(points, s=0, k=self.data.interp_order)
+                n = self.data.interp_points
+                unew = np.arange(0, 1 + 1/n, 1/n)
+                out = interpolate.splev(unew, tck)
+                out_x = out[0]
+                out_y = out[1]
+            else:
+                out_x = x
+                out_y = y
             self.data.x_data_points_px = out_x
             self.data.y_data_points_px = out_y
             n_sm = len(out_x)
@@ -299,12 +308,17 @@ class Bindings:
             self.window.image_canvas.itemconfig(self.image_on_canvas, image = photo)
             self.window.image_canvas.move(self.curimg, self.data.current_delta_x, self.data.current_delta_y)
             self.draw_datum_lines(self.any_select())
+            if self.data.interp_order < 2:
+                self.window.num_points_entry.configure(state="disabled")
+            else:
+                self.window.num_points_entry.configure(state="normal")
             self.make_draw_spline()
             for x in self.data.profile_points:
                 self.draw_marker(x[0], x[1], False)
             if self.data.selected_index >= 0:
                 selected_pt = self.data.profile_points[self.data.selected_index]
                 self.draw_marker(selected_pt[0], selected_pt[1], True)
+            self.window.image_canvas.focus()
                 
     def draw_datum_lines(self, solid):
         if self.data.x1_pixel >= 0:

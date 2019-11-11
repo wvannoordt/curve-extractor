@@ -36,3 +36,4 @@ class Params:
         self.x_data_points_px = ()
         self.y_data_points_px = ()
         self.interp_order = 3
+        self.no_keys = False
