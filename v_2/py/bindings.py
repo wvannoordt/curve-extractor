@@ -160,6 +160,9 @@ class Bindings:
                         delta = 2
                     self.data.interp_order = self.data.interp_order + delta
                     self.refresh_all()
+            if str(event.char) == "c":
+                self.data.profile_points.clear()
+                self.refresh_all()
                 
     def refresh_scale(self):
         self.window.image_canvas.delete("all")
